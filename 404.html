@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limit - Bookmark Redirect</title>
+    <meta name="description" content="View this bookmark in Limit app for Bluesky">
+    
+    <!-- Open Graph tags for social sharing -->
+    <meta property="og:title" content="Shared Bookmark - Limit">
+    <meta property="og:description" content="View this bookmark in Limit app for Bluesky">
+    <meta property="og:image" content="https://ios.hyperlimit.app/assets/og-image.png">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 400px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            animation: spin 1s linear infinite;
+        }
+        
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .secondary-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .error-container {
+            background: rgba(255, 70, 70, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        
+        #bookmark-content, #not-found-content, #loading-content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading state (shown initially) -->
+    <div id="loading-content" class="container">
+        <div class="loader"></div>
+        <h1>Opening in Limit...</h1>
+        <p>Redirecting you to view this bookmark</p>
+    </div>
+    
+    <!-- Bookmark redirect content -->
+    <div id="bookmark-content" class="container">
+        <div class="icon">🔖</div>
+        <h1>Open Bookmark in Limit</h1>
+        <p>This bookmark was shared from Limit app</p>
+        
+        <a href="https://apps.apple.com/app/limit-for-sky/id6748037680" class="button">
+            Get Limit on App Store
+        </a>
+        <a href="https://ios.hyperlimit.app" class="button secondary-button">
+            Learn More
+        </a>
+    </div>
+    
+    <!-- 404 Not Found content -->
+    <div id="not-found-content" class="container">
+        <div class="error-container">
+            <div class="icon">⚠️</div>
+            <h1>Page Not Found</h1>
+            <p>The page you're looking for doesn't exist.</p>
+            
+            <a href="https://ios.hyperlimit.app" class="button">
+                Go to Homepage
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // Check if this is a bookmark URL
+        function isBookmarkURL() {
+            const path = window.location.pathname;
+            return path.startsWith('/bookmark/') || path.startsWith('/b/');
+        }
+        
+        // Parse bookmark parameters from URL
+        function parseBookmarkURL() {
+            const path = window.location.pathname;
+            const pathParts = path.split('/').filter(p => p);
+            
+            // Remove 'bookmark' or 'b' from the beginning
+            if (pathParts[0] === 'bookmark' || pathParts[0] === 'b') {
+                pathParts.shift();
+            }
+            
+            if (pathParts.length >= 3) {
+                return {
+                    did: pathParts[0],
+                    collection: pathParts[1],
+                    rkey: pathParts[2]
+                };
+            }
+            return null;
+        }
+        
+        // Main logic
+        function handlePageLoad() {
+            const loadingEl = document.getElementById('loading-content');
+            const bookmarkEl = document.getElementById('bookmark-content');
+            const notFoundEl = document.getElementById('not-found-content');
+            
+            if (isBookmarkURL()) {
+                // This is a bookmark URL
+                const params = parseBookmarkURL();
+                
+                if (params) {
+                    // Show loading state
+                    loadingEl.style.display = 'block';
+                    
+                    // Try to open in app with deep link
+                    const deepLink = `limit://bookmark/${params.did}/${params.collection}/${params.rkey}`;
+                    
+                    // Attempt to open the app
+                    // Note: This might not work if the app isn't installed, 
+                    // but iOS will handle universal links before this JS runs if app is installed
+                    window.location.href = deepLink;
+                    
+                    // After 2 seconds, show the App Store option
+                    setTimeout(function() {
+                        loadingEl.style.display = 'none';
+                        bookmarkEl.style.display = 'block';
+                    }, 2000);
+                } else {
+                    // Invalid bookmark URL format
+                    loadingEl.style.display = 'none';
+                    notFoundEl.style.display = 'block';
+                }
+            } else {
+                // Not a bookmark URL - show 404
+                loadingEl.style.display = 'none';
+                notFoundEl.style.display = 'block';
+            }
+        }
+        
+        // Run when page loads
+        handlePageLoad();
+    </script>
+</body>
+</html>
