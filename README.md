@@ -35,4 +35,4 @@ This site is automatically deployed via GitHub Pages to [ios.hyperlimit.app](htt
 ## Main App
 
 - [GitHub Repository](https://github.com/P24L/Limit)
-- [App Store](https://apps.apple.com/app/limit-for-bluesky/id6738954136)
+- [App Store](https://apps.apple.com/app/limit-for-sky/id6748037680)
