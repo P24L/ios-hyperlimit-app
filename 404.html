@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Limit - Bookmark Redirect</title>
     <meta name="description" content="View this bookmark in Limit app for Bluesky">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Smart App Banner - will be populated dynamically with correct app-argument -->
+    <meta name="apple-itunes-app" content="app-id=6748037680" id="smart-banner">
     
     <!-- Open Graph tags for social sharing -->
     <meta property="og:title" content="Shared Bookmark - Limit">
@@ -121,6 +125,26 @@
         #bookmark-content, #not-found-content, #loading-content {
             display: none;
         }
+        
+        /* Show fallback when class is added */
+        .show-fallback #loading-content { display: none !important; }
+        .show-fallback #bookmark-content { display: block !important; }
+        .show-404 #loading-content { display: none !important; }
+        .show-404 #not-found-content { display: block !important; }
+        
+        /* Desktop-specific message */
+        .desktop-only {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .mobile-only {
+                display: none;
+            }
+            .desktop-only {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
@@ -135,12 +159,24 @@
     <div id="bookmark-content" class="container">
         <div class="icon">🔖</div>
         <h1>Open Bookmark in Limit</h1>
-        <p>This bookmark was shared from Limit app</p>
         
-        <a href="https://apps.apple.com/app/limit-for-sky/id6748037680" class="button">
-            Get Limit on App Store
-        </a>
-        <a href="https://ios.hyperlimit.app" class="button secondary-button">
+        <!-- Mobile message -->
+        <div class="mobile-only">
+            <p>This bookmark was shared from Limit app</p>
+            <a href="https://apps.apple.com/app/limit-for-sky/id6748037680" class="button" rel="nofollow">
+                Get Limit on App Store
+            </a>
+        </div>
+        
+        <!-- Desktop message -->
+        <div class="desktop-only">
+            <p>Limit is an iOS app. Open this link on your iPhone or iPad to view the bookmark.</p>
+            <a href="https://apps.apple.com/app/limit-for-sky/id6748037680" class="button" rel="nofollow">
+                View on App Store
+            </a>
+        </div>
+        
+        <a href="https://ios.hyperlimit.app" class="button secondary-button" rel="nofollow">
             Learn More
         </a>
     </div>
@@ -159,73 +195,99 @@
     </div>
     
     <script>
-        // Check if this is a bookmark URL
-        function isBookmarkURL() {
-            const path = window.location.pathname;
-            return path.startsWith('/bookmark/') || path.startsWith('/b/');
-        }
-        
-        // Parse bookmark parameters from URL
-        function parseBookmarkURL() {
-            const path = window.location.pathname;
-            const pathParts = path.split('/').filter(p => p);
+        (function() {
+            // Platform detection
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isStandalone = window.navigator.standalone; // PWA mode
             
-            // Remove 'bookmark' or 'b' from the beginning
-            if (pathParts[0] === 'bookmark' || pathParts[0] === 'b') {
-                pathParts.shift();
+            // Check if this is a bookmark URL
+            function isBookmarkURL() {
+                const path = window.location.pathname;
+                return path.startsWith('/bookmark/') || path.startsWith('/b/');
             }
             
-            if (pathParts.length >= 3) {
-                return {
-                    did: pathParts[0],
-                    collection: pathParts[1],
-                    rkey: pathParts[2]
-                };
+            // Parse bookmark parameters from URL
+            function parseBookmarkURL() {
+                const path = window.location.pathname;
+                const pathParts = path.split('/').filter(p => p);
+                
+                // Remove 'bookmark' or 'b' from the beginning
+                if (pathParts[0] === 'bookmark' || pathParts[0] === 'b') {
+                    pathParts.shift();
+                }
+                
+                if (pathParts.length >= 3) {
+                    return {
+                        did: pathParts[0],
+                        collection: pathParts[1],
+                        rkey: pathParts[2]
+                    };
+                }
+                return null;
             }
-            return null;
-        }
-        
-        // Main logic
-        function handlePageLoad() {
-            const loadingEl = document.getElementById('loading-content');
-            const bookmarkEl = document.getElementById('bookmark-content');
-            const notFoundEl = document.getElementById('not-found-content');
             
+            // Show fallback UI
+            function showFallback() {
+                document.documentElement.classList.add('show-fallback');
+                // Replace history to prevent back button loop
+                if (window.history && window.history.replaceState) {
+                    history.replaceState(null, '', '/');
+                }
+            }
+            
+            // Show 404 page
+            function show404() {
+                document.documentElement.classList.add('show-404');
+            }
+            
+            // Main logic
             if (isBookmarkURL()) {
-                // This is a bookmark URL
                 const params = parseBookmarkURL();
                 
                 if (params) {
-                    // Show loading state
-                    loadingEl.style.display = 'block';
-                    
-                    // Try to open in app with deep link
+                    // Valid bookmark URL
                     const deepLink = `limit://bookmark/${params.did}/${params.collection}/${params.rkey}`;
                     
-                    // Attempt to open the app
-                    // Note: This might not work if the app isn't installed, 
-                    // but iOS will handle universal links before this JS runs if app is installed
-                    window.location.href = deepLink;
+                    // Update Smart App Banner with deep link
+                    const smartBanner = document.getElementById('smart-banner');
+                    if (smartBanner) {
+                        smartBanner.content = `app-id=6748037680, app-argument=${deepLink}`;
+                    }
                     
-                    // After 2 seconds, show the App Store option
-                    setTimeout(function() {
-                        loadingEl.style.display = 'none';
-                        bookmarkEl.style.display = 'block';
-                    }, 2000);
+                    // Show loading initially
+                    document.getElementById('loading-content').style.display = 'block';
+                    
+                    if (isIOS && !isStandalone) {
+                        // On iOS: try deep link
+                        let fallbackTimer;
+                        
+                        // Listen for page visibility change (app opened)
+                        const onHide = () => {
+                            clearTimeout(fallbackTimer);
+                            document.removeEventListener('visibilitychange', onHide);
+                        };
+                        document.addEventListener('visibilitychange', onHide);
+                        
+                        // Try custom scheme (only on iOS, after Universal Link would have fired)
+                        setTimeout(() => {
+                            window.location.href = deepLink;
+                        }, 100);
+                        
+                        // Show fallback after 1.2s if app didn't open
+                        fallbackTimer = setTimeout(showFallback, 1200);
+                    } else {
+                        // Desktop/Android: show fallback immediately
+                        showFallback();
+                    }
                 } else {
                     // Invalid bookmark URL format
-                    loadingEl.style.display = 'none';
-                    notFoundEl.style.display = 'block';
+                    show404();
                 }
             } else {
                 // Not a bookmark URL - show 404
-                loadingEl.style.display = 'none';
-                notFoundEl.style.display = 'block';
+                show404();
             }
-        }
-        
-        // Run when page loads
-        handlePageLoad();
+        })();
     </script>
 </body>
 </html>
