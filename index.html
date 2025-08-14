@@ -7,7 +7,9 @@
     <meta name="description" content="Experience Bluesky with advanced bookmark management, hot posts discovery, and powerful search features.">
     <meta property="og:title" content="Limit - Premium Bluesky Client">
     <meta property="og:description" content="The most powerful Bluesky client for iOS with advanced features.">
-    <meta property="og:image" content="https://ios.hyperlimit.app/assets/og-image.png">
+    <meta property="og:image" content="https://ios.hyperlimit.app/assets/app-icon.svg">
+    <link rel="icon" type="image/svg+xml" href="/assets/app-icon.svg">
+    <link rel="apple-touch-icon" href="/assets/app-icon.svg">
     <style>
         * {
             margin: 0;
@@ -47,15 +49,21 @@
         .logo {
             width: 120px;
             height: 120px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 30px;
             margin: 0 auto 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         
         h1 {
@@ -140,7 +148,9 @@
 </head>
 <body>
     <div class="container">
-        <div class="logo">🚀</div>
+        <div class="logo">
+            <img src="/assets/app-icon.svg" alt="Limit App Icon">
+        </div>
         
         <h1>Limit</h1>
         <p class="tagline">The Premium Bluesky Client for iOS</p>

@@ -13,7 +13,9 @@
     <!-- Open Graph tags for social sharing -->
     <meta property="og:title" content="Shared Bookmark - Limit">
     <meta property="og:description" content="View this bookmark in Limit app for Bluesky">
-    <meta property="og:image" content="https://ios.hyperlimit.app/assets/og-image.png">
+    <meta property="og:image" content="https://ios.hyperlimit.app/assets/app-icon.svg">
+    <link rel="icon" type="image/svg+xml" href="/assets/app-icon.svg">
+    <link rel="apple-touch-icon" href="/assets/app-icon.svg">
     <meta property="og:type" content="website">
     
     <style>
@@ -71,14 +73,20 @@
         .icon {
             width: 80px;
             height: 80px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             margin: 0 auto 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            padding: 15px;
+        }
+        
+        .icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         
         h1 {
@@ -157,7 +165,9 @@
     
     <!-- Bookmark redirect content -->
     <div id="bookmark-content" class="container">
-        <div class="icon">🔖</div>
+        <div class="icon">
+            <img src="/assets/app-icon.svg" alt="Limit App Icon">
+        </div>
         <h1>Open Bookmark in Limit</h1>
         
         <!-- Mobile message -->
@@ -184,7 +194,9 @@
     <!-- 404 Not Found content -->
     <div id="not-found-content" class="container">
         <div class="error-container">
-            <div class="icon">⚠️</div>
+            <div class="icon">
+                <img src="/assets/app-icon.svg" alt="Limit App Icon" style="opacity: 0.5;">
+            </div>
             <h1>Page Not Found</h1>
             <p>The page you're looking for doesn't exist.</p>
             

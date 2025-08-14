@@ -1,0 +1,59 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF8C42;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA947;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2E86AB;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4DA3CF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6BB6D6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8C42;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA947;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- White background circle -->
+  <circle cx="100" cy="100" r="95" fill="white"/>
+  
+  <!-- Orange/red arrow shape -->
+  <path d="M 30 60 
+           C 30 50, 40 40, 50 40
+           L 120 40
+           C 130 40, 140 45, 145 55
+           L 160 85
+           C 165 95, 160 105, 150 110
+           L 110 130
+           C 100 135, 90 130, 85 120
+           L 70 90
+           L 50 90
+           C 40 90, 30 80, 30 70
+           Z" 
+        fill="url(#orangeGradient)" 
+        opacity="0.9"/>
+  
+  <!-- Blue arrow shape -->
+  <path d="M 40 110
+           C 40 100, 50 90, 60 90
+           L 90 90
+           L 105 120
+           C 110 130, 120 135, 130 130
+           L 170 110
+           C 180 105, 185 95, 180 85
+           L 165 55
+           C 160 45, 150 40, 140 40
+           L 110 40
+           L 110 70
+           L 80 70
+           C 70 70, 60 75, 55 85
+           L 40 115
+           Z" 
+        fill="url(#blueGradient)" 
+        opacity="0.9"/>
+  
+  <!-- Small circle in top right -->
+  <circle cx="160" cy="40" r="18" fill="url(#circleGradient)" opacity="0.95"/>
+</svg>
